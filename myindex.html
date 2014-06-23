@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Nordic Inverter Heat Pump</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/starter-template.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Gazoo</a>
+		  <a class="navbar-text" href="#state-off"><span class="label label-success">ON <span class="glyphicon glyphicon-off"></span></span></a>
+		  <!--
+			  <span class="label label-success">Success</span>
+			  <span class="label label-danger">Danger</span>
+			  -->
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#mode-heat"><span class="glyphicon glyphicon-fire"></span> Heat</a></li>
+            <li><a href="#mode-cool">Cool</a></li>
+            <li><a href="#mode-fan">Fan</a></li>
+            <li><a href="#mode-dry">Dry</a></li>
+			<li><a href=""></a></li>
+			<li class="active"><a href="#full">Full Effect</a></li>
+			<li><a href="#ion">ION</a></li>
+			<li><a href="#swing">Swing</a><li>
+		  </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+<!--
+      <div class="input-group">
+        <span class="input-group-addon">Temperature</span>
+        <input type="text" class="form-control" placeholder="18°C - 32°C">
+      </div>
+-->
+
+<!--
+      <div class="starter-template">
+        <h1>Bootstrap starter template</h1>
+        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+      </div>
+-->
+
+      <!-- Example row of columns -->
+      <div class="row"><div class="col-lg-1"><br/></div></div>
+      <div class="row">
+		<div class="col-lg-1"></div>
+        <div class="col-lg-3">
+		  <div class="${temp_absolute_visibility}">
+			<div class="btn-group">
+			  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Temperature: <b>23</b>°C <span class="caret"></span>
+			  </button>
+			  <ul class="dropdown-menu" role="menu">
+				<li><a href="#temperature-32">32</a></li>
+				<li><a href="#temperature-31">31</a></li>
+				<li><a href="#temperature-30">30</a></li>
+				<li><a href="#temperature-29">29</a></li>
+				<li><a href="#temperature-28">28</a></li>
+				<li><a href="#temperature-27">27</a></li>
+				<li><a href="#temperature-26">26</a></li>
+				<li><a href="#temperature-25">25</a></li>
+				<li><a href="#temperature-24">24</a></li>
+				<li><a href="#temperature-23"><b>23</b></a></li>
+				<li><a href="#temperature-22">22</a></li>
+				<li><a href="#temperature-21">21</a></li>
+				<li><a href="#temperature-20">20</a></li>
+				<li><a href="#temperature-19">19</a></li>
+				<li><a href="#temperature-18">18</a></li>
+			  </ul>
+			</div>
+		  </div>
+		  <div class="${temp_relative_visibility}">
+			<div class="btn-group">
+			  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Temperature: <b>0</b>°C <span class="caret"></span>
+			  </button>
+			  <ul class="dropdown-menu" role="menu">
+				<li><a href="#temperature--2">-2</a></li>
+				<li><a href="#temperature--1">-1</a></li>
+				<li><a href="#temperature-0"><b>0</b></a></li>
+				<li><a href="#temperature-+1">+1</a></li>
+				<li><a href="#temperature-+2">+2</a></li>
+			  </ul>
+			</div>
+		  </div>
+        </div>
+        <div class="col-lg-3">
+		  <div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			  Fan: <b>Auto</b> <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+			  <li><a href="#fan-auto"><b>Auto</b></a></li>
+			  <li><a href="#fan-slow">Slow</a></li>
+			  <li><a href="#fan-medium">Medium</a></li>
+			  <li><a href="#fan-fast">Fast</a></li>
+			</ul>
+		  </div>
+        </div>
+      </div>
+
+    </div><!-- /.container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/jquery-1.11.1.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
