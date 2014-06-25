@@ -26,28 +26,55 @@ class RemoteState:
         self.temperature  = 23
         self.fan_strength = FanStrength.Auto
 
-def bool_to_visibility(value):
-    return 'show' if value else 'hidden'
+# The global instance.
+remote_state = RemoteState()
+
 
 def bool_to_mode_active(value):
     return 'active' if value else 'not-active'
 
-def mode_uses_abs_temp(remote_state):
-    return remote_state.mode == Mode.Heat or remote_state.mode == Mode.Cool
+def mode_uses_abs_temp(mode):
+    return mode == Mode.Heat or mode == Mode.Cool
 
-remote_state = RemoteState()
+def make_bold(what):
+    return "<b>"+ what + "</b>"
+
+def decorate_if_active(what, active):
+    if active:
+        return make_bold(what)
+    return what
+
+def generate_temperature_list_item(temperature, active):
+    return '<li><a href="/remote/temperature/' + str(temperature) + '">' + decorate_if_active(str(temperature), active) + '</a></li>'
+
+def generate_temperature_list_from_list(temperatures):
+    data = ""
+    for temperature in temperatures:
+        data += generate_temperature_list_item(temperature, temperature == remote_state.temperature)
+    return data
+
+def generate_absolute_temperature_list():
+    return generate_temperature_list_from_list(range(18, 32 + 1))
+
+def generate_relative_temperature_list():
+    return generate_temperature_list_from_list(range(-2, 2 + 1))
+
+def generate_temperature_list():
+    if mode_uses_abs_temp(remote_state.mode):
+        return generate_absolute_temperature_list()
+    return generate_relative_temperature_list()
 
 def generate_page():
     with open ("myindex.html", "r") as myfile:
         data = myfile.read()
         data = data.replace('\n', '')
         data = Template(data).substitute(
-            temp_absolute_visibility=bool_to_visibility(mode_uses_abs_temp(remote_state)),
-            temp_relative_visibility=bool_to_visibility(not mode_uses_abs_temp(remote_state)),
             mode_heat_active=bool_to_mode_active(remote_state.mode == Mode.Heat),
             mode_cool_active=bool_to_mode_active(remote_state.mode == Mode.Cool),
             mode_fan_active =bool_to_mode_active(remote_state.mode == Mode.Fan),
-            mode_dry_active =bool_to_mode_active(remote_state.mode == Mode.Dry)
+            mode_dry_active =bool_to_mode_active(remote_state.mode == Mode.Dry),
+            temperature=remote_state.temperature,
+            temperature_list=generate_temperature_list()
             )
     return data
 
