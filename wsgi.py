@@ -29,6 +29,10 @@ class RemoteState:
 # The global instance.
 remote_state = RemoteState()
 
+# TODO: 10 is a valid temperature for mode == Heat
+# +1 to become inclusive
+valid_absolute_temperatures = range(18, 32 + 1)
+valid_relative_temperatures = range(-2, 2  + 1)
 
 def bool_to_mode_active(value):
     return 'active' if value else 'not-active'
@@ -54,10 +58,10 @@ def generate_temperature_list_from_list(temperatures):
     return data
 
 def generate_absolute_temperature_list():
-    return generate_temperature_list_from_list(range(18, 32 + 1))
+    return generate_temperature_list_from_list(valid_absolute_temperatures)
 
 def generate_relative_temperature_list():
-    return generate_temperature_list_from_list(range(-2, 2 + 1))
+    return generate_temperature_list_from_list(valid_relative_temperatures)
 
 def generate_temperature_list():
     if mode_uses_abs_temp(remote_state.mode):
@@ -78,6 +82,12 @@ def generate_page():
             )
     return data
 
+def valid_temperatures(mode):
+    return valid_absolute_temperatures if mode_uses_abs_temp(mode) else valid_relative_temperatures
+
+def is_valid_temperature(temperature, mode):
+    return temperature in valid_temperatures(mode)
+
 def handle_mode_request(path):
     global remote_state
 
@@ -97,6 +107,29 @@ def handle_mode_request(path):
         remote_state.mode        = Mode.Dry
         remote_state.temperature = 0
 
+def handle_temperature_request(path):
+    global remote_state
+
+    temperature_str = path[len('/remote/temperature/'):]
+    if temperature_str == "":
+        # Do nothing ATM
+        return
+    else:
+        if temperature_str[0] == '-':
+            if temperature_str[1:].isdigit():
+                temperature = -int(temperature_str[1:])
+            else:
+                # Do nothing ATM
+                return
+        else:
+            if temperature_str.isdigit():
+                temperature = int(temperature_str)
+            else:
+                # Do nothing ATM
+                return
+
+        if is_valid_temperature(temperature, remote_state.mode):
+            remote_state.temperature = temperature
 
 # Basic WSGI application code
 def application(env, start_response):
@@ -115,6 +148,9 @@ def application(env, start_response):
         return "<html><body>Apa</body></html>"
 
     if path.startswith('/remote/mode'):
-        handle_mode_request(path);
+        handle_mode_request(path)
+
+    if path.startswith('/remote/temperature/'):
+        handle_temperature_request(path)
 
     return generate_page()
