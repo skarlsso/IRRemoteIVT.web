@@ -44,6 +44,26 @@ def generate_page():
             )
     return data
 
+def handle_mode_request(path):
+    global remote_state
+
+    if path.startswith('/remote/mode/heat'):
+        remote_state.mode        = Mode.Heat
+        remote_state.temperature = 23
+
+    if path.startswith('/remote/mode/cool'):
+        remote_state.mode        = Mode.Cool
+        remote_state.temperature = 20
+
+    if path.startswith('/remote/mode/fan'):
+        remote_state.mode        = Mode.Fan
+        remote_state.temperature = 0
+
+    if path.startswith('/remote/mode/dry'):
+        remote_state.mode        = Mode.Dry
+        remote_state.temperature = 0
+
+
 # Basic WSGI application code
 def application(env, start_response):
     start_response('200 OK', [('Content-Type', 'text/html')])
@@ -57,29 +77,10 @@ def application(env, start_response):
             data=myfile.read().replace('\n', '')
         return data
 
-    if path.startswith('/remote/mode/heat'):
-        remote_state.mode        = Mode.Heat
-        remote_state.temperature = 23
-        return generate_page()
+    if not path.startswith('/remote'):
+        return "<html><body>Apa</body></html>"
 
-    if path.startswith('/remote/mode/cool'):
-        remote_state.mode        = Mode.Cool
-        remote_state.temperature = 20
-        return generate_page()
+    if path.startswith('/remote/mode'):
+        handle_mode_request(path);
 
-    if path.startswith('/remote/mode/fan'):
-        remote_state.mode        = Mode.Fan
-        remote_state.temperature = 0
-        return generate_page()
-
-    if path.startswith('/remote/mode/dry'):
-        remote_state.mode        = Mode.Dry
-        remote_state.temperature = 0
-        return generate_page()
-
-    if path.startswith('/remote'):
-        return generate_page()
-
-    return "<html><body>Apa</body></html>"
-
-#    return ["Hello!"]
+    return generate_page()
