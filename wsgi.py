@@ -17,20 +17,22 @@ class FanStrength:
 
 class RemoteState:
     """The state off the Remote"""
-    state        = State.On
-    mode         = Mode.Heat
-    ion          = Ion.Off
-    full_effect  = FullEffect.On
-    temperature  = 23
-    fan_strength = FanStrength.Auto
 
+    def __init__(self):
+        self.state        = State.On
+        self.mode         = Mode.Heat
+        self.ion          = Ion.Off
+        self.full_effect  = FullEffect.On
+        self.temperature  = 23
+        self.fan_strength = FanStrength.Auto
 
 def bool_to_visibility(value):
     return 'show' if value else 'hidden'
 
 def mode_uses_abs_temp(remote_state):
     return remote_state.mode == Mode.Heat or remote_state.mode == Mode.Cool
-        
+
+remote_state = RemoteState()
 
 # Basic WSGI application code
 def application(env, start_response):
@@ -38,7 +40,7 @@ def application(env, start_response):
 
     path = env['PATH_INFO']
 
-    remote_state = RemoteState()
+    global remote_state;
 
     if path[:10] == '/bootstrap':
         with open ("myindex.html", "r") as myfile:
