@@ -34,6 +34,16 @@ def mode_uses_abs_temp(remote_state):
 
 remote_state = RemoteState()
 
+def generate_page():
+    with open ("myindex.html", "r") as myfile:
+        data = myfile.read()
+        data = data.replace('\n', '')
+        data = Template(data).substitute(
+            temp_absolute_visibility=bool_to_visibility(mode_uses_abs_temp(remote_state)),
+            temp_relative_visibility=bool_to_visibility(not mode_uses_abs_temp(remote_state))
+            )
+    return data
+
 # Basic WSGI application code
 def application(env, start_response):
     start_response('200 OK', [('Content-Type', 'text/html')])
@@ -47,15 +57,28 @@ def application(env, start_response):
             data=myfile.read().replace('\n', '')
         return data
 
-    if path[:12] == '/remote/wsgi':
-        with open ("myindex.html", "r") as myfile:
-            data = myfile.read()
-            data = data.replace('\n', '')
-            data = Template(data).substitute(
-                temp_absolute_visibility=bool_to_visibility(mode_uses_abs_temp(remote_state)),
-                temp_relative_visibility=bool_to_visibility(not mode_uses_abs_temp(remote_state))
-                )
-        return data
+    if path.startswith('/remote/mode/heat'):
+        remote_state.mode        = Mode.Heat
+        remote_state.temperature = 23
+        return generate_page()
+
+    if path.startswith('/remote/mode/cool'):
+        remote_state.mode        = Mode.Cool
+        remote_state.temperature = 20
+        return generate_page()
+
+    if path.startswith('/remote/mode/fan'):
+        remote_state.mode        = Mode.Fan
+        remote_state.temperature = 0
+        return generate_page()
+
+    if path.startswith('/remote/mode/dry'):
+        remote_state.mode        = Mode.Dry
+        remote_state.temperature = 0
+        return generate_page()
+
+    if path.startswith('/remote'):
+        return generate_page()
 
     return "<html><body>Apa</body></html>"
 
