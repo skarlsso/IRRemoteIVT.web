@@ -29,6 +29,9 @@ class RemoteState:
 def bool_to_visibility(value):
     return 'show' if value else 'hidden'
 
+def bool_to_mode_active(value):
+    return 'active' if value else 'not-active'
+
 def mode_uses_abs_temp(remote_state):
     return remote_state.mode == Mode.Heat or remote_state.mode == Mode.Cool
 
@@ -40,7 +43,11 @@ def generate_page():
         data = data.replace('\n', '')
         data = Template(data).substitute(
             temp_absolute_visibility=bool_to_visibility(mode_uses_abs_temp(remote_state)),
-            temp_relative_visibility=bool_to_visibility(not mode_uses_abs_temp(remote_state))
+            temp_relative_visibility=bool_to_visibility(not mode_uses_abs_temp(remote_state)),
+            mode_heat_active=bool_to_mode_active(remote_state.mode == Mode.Heat),
+            mode_cool_active=bool_to_mode_active(remote_state.mode == Mode.Cool),
+            mode_fan_active =bool_to_mode_active(remote_state.mode == Mode.Fan),
+            mode_dry_active =bool_to_mode_active(remote_state.mode == Mode.Dry)
             )
     return data
 
