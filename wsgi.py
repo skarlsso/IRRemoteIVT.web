@@ -1,8 +1,5 @@
 from string import Template
 
-class State:
-    Off, On = range(2)
-
 class Mode:
     Heat, Cool, Fan, Dry = range(4)
 
@@ -14,7 +11,7 @@ class RemoteState:
     """The state off the Remote"""
 
     def __init__(self):
-        self.state       = State.On
+        self.state       = False
         self.mode        = Mode.Heat
         self.full_effect = False
         self.ion         = False
@@ -70,6 +67,11 @@ def generate_temperature_list():
         return generate_absolute_temperature_list()
     return generate_relative_temperature_list()
 
+def generate_on_off_indicator(value):
+    icon_color = 'success' if value else "danger"
+    icon_text  = 'ON' if value else 'OFF'
+    return '<span class="label label-' + icon_color + '">' + icon_text + ' <span class="glyphicon glyphicon-off"></span></span>'
+
 def generate_page():
     with open ("myindex.html", "r") as myfile:
         data = myfile.read()
@@ -86,6 +88,7 @@ def generate_page():
             temperature_list   = generate_temperature_list(),
             fan_speed          = FanSpeed.to_string[remote_state.fan_speed],
             fan_speed_list     = generate_fan_speed_list(),
+            on_off_indicator   = generate_on_off_indicator(remote_state.state)
             )
     return data
 
@@ -170,6 +173,11 @@ def handle_swing_request(path):
     remote_state.swing = not remote_state.swing
 
 
+def handle_on_off_request(path):
+    global remote_state
+
+    remote_state.state = not remote_state.state
+
 def application(env, start_response):
     start_response('200 OK', [('Content-Type', 'text/html')])
 
@@ -202,5 +210,8 @@ def application(env, start_response):
 
     if path.startswith('/remote/swing'):
         handle_swing_request(path)
+
+    if path.startswith('/remote/on_off'):
+        handle_on_off_request(path)
 
     return generate_page()
