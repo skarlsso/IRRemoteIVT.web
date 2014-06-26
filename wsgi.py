@@ -6,12 +6,6 @@ class State:
 class Mode:
     Heat, Cool, Fan, Dry = range(4)
 
-class Ion:
-    Off, On = range(2)
-
-class FullEffect:
-    Off, On = range(2)
-
 class FanStrength:
     Auto, Low, Medium, High = range(4)
 
@@ -21,8 +15,9 @@ class RemoteState:
     def __init__(self):
         self.state        = State.On
         self.mode         = Mode.Heat
-        self.ion          = Ion.Off
-        self.full_effect  = FullEffect.On
+        self.full_effect  = False
+        self.ion          = False
+        self.swing        = False
         self.temperature  = 23
         self.fan_strength = FanStrength.Auto
 
@@ -34,7 +29,7 @@ remote_state = RemoteState()
 valid_absolute_temperatures = range(18, 32 + 1)
 valid_relative_temperatures = range(-2, 2  + 1)
 
-def bool_to_mode_active(value):
+def bool_to_active(value):
     return 'active' if value else 'not-active'
 
 def mode_uses_abs_temp(mode):
@@ -73,10 +68,13 @@ def generate_page():
         data = myfile.read()
         data = data.replace('\n', '')
         data = Template(data).substitute(
-            mode_heat_active=bool_to_mode_active(remote_state.mode == Mode.Heat),
-            mode_cool_active=bool_to_mode_active(remote_state.mode == Mode.Cool),
-            mode_fan_active =bool_to_mode_active(remote_state.mode == Mode.Fan),
-            mode_dry_active =bool_to_mode_active(remote_state.mode == Mode.Dry),
+            mode_heat_active   = bool_to_active(remote_state.mode == Mode.Heat),
+            mode_cool_active   = bool_to_active(remote_state.mode == Mode.Cool),
+            mode_fan_active    = bool_to_active(remote_state.mode == Mode.Fan),
+            mode_dry_active    = bool_to_active(remote_state.mode == Mode.Dry),
+            full_effect_active = bool_to_active(remote_state.full_effect),
+            ion_active         = bool_to_active(remote_state.ion),
+            swing_active       = bool_to_active(remote_state.swing),
             temperature=remote_state.temperature,
             temperature_list=generate_temperature_list()
             )
@@ -131,7 +129,25 @@ def handle_temperature_request(path):
         if is_valid_temperature(temperature, remote_state.mode):
             remote_state.temperature = temperature
 
-# Basic WSGI application code
+
+def handle_full_effect_request(path):
+    global remote_state
+
+    remote_state.full_effect = not remote_state.full_effect
+
+
+def handle_ion_request(path):
+    global remote_state
+
+    remote_state.ion = not remote_state.ion
+
+
+def handle_swing_request(path):
+    global remote_state
+
+    remote_state.swing = not remote_state.swing
+
+
 def application(env, start_response):
     start_response('200 OK', [('Content-Type', 'text/html')])
 
@@ -152,5 +168,14 @@ def application(env, start_response):
 
     if path.startswith('/remote/temperature/'):
         handle_temperature_request(path)
+
+    if path.startswith('/remote/full_effect'):
+        handle_full_effect_request(path)
+
+    if path.startswith('/remote/ion'):
+        handle_ion_request(path)
+
+    if path.startswith('/remote/swing'):
+        handle_swing_request(path)
 
     return generate_page()
