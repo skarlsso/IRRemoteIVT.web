@@ -6,20 +6,21 @@ class State:
 class Mode:
     Heat, Cool, Fan, Dry = range(4)
 
-class FanStrength:
+class FanSpeed:
     Auto, Low, Medium, High = range(4)
+    to_string = ['Auto', 'Low', 'Medium', 'High']
 
 class RemoteState:
     """The state off the Remote"""
 
     def __init__(self):
-        self.state        = State.On
-        self.mode         = Mode.Heat
-        self.full_effect  = False
-        self.ion          = False
-        self.swing        = False
-        self.temperature  = 23
-        self.fan_strength = FanStrength.Auto
+        self.state       = State.On
+        self.mode        = Mode.Heat
+        self.full_effect = False
+        self.ion         = False
+        self.swing       = False
+        self.temperature = 23
+        self.fan_speed   = FanSpeed.Auto
 
 # The global instance.
 remote_state = RemoteState()
@@ -42,6 +43,12 @@ def decorate_if_active(what, active):
     if active:
         return make_bold(what)
     return what
+
+def generate_fan_speed_list():
+    return '<li><a href="/remote/fan_speed/auto">'   + decorate_if_active('Auto',   remote_state.fan_speed == FanSpeed.Auto)   + '</a></li>' + \
+           '<li><a href="/remote/fan_speed/low">'    + decorate_if_active('Low',    remote_state.fan_speed == FanSpeed.Low)    + '</a></li>' + \
+           '<li><a href="/remote/fan_speed/medium">' + decorate_if_active('Medium', remote_state.fan_speed == FanSpeed.Medium) + '</a></li>' + \
+           '<li><a href="/remote/fan_speed/high">'   + decorate_if_active('High',   remote_state.fan_speed == FanSpeed.High)   + '</a></li>'    
 
 def generate_temperature_list_item(temperature, active):
     return '<li><a href="/remote/temperature/' + str(temperature) + '">' + decorate_if_active(str(temperature), active) + '</a></li>'
@@ -75,8 +82,10 @@ def generate_page():
             full_effect_active = bool_to_active(remote_state.full_effect),
             ion_active         = bool_to_active(remote_state.ion),
             swing_active       = bool_to_active(remote_state.swing),
-            temperature=remote_state.temperature,
-            temperature_list=generate_temperature_list()
+            temperature        = remote_state.temperature,
+            temperature_list   = generate_temperature_list(),
+            fan_speed          = FanSpeed.to_string[remote_state.fan_speed],
+            fan_speed_list     = generate_fan_speed_list(),
             )
     return data
 
@@ -104,6 +113,19 @@ def handle_mode_request(path):
     if path.startswith('/remote/mode/dry'):
         remote_state.mode        = Mode.Dry
         remote_state.temperature = 0
+
+def handle_fan_speed_request(path):
+    if path.startswith('/remote/fan_speed/auto'):
+        remote_state.fan_speed = FanSpeed.Auto
+
+    if path.startswith('/remote/fan_speed/low'):
+        remote_state.fan_speed = FanSpeed.Low
+
+    if path.startswith('/remote/fan_speed/medium'):
+        remote_state.fan_speed = FanSpeed.Medium
+
+    if path.startswith('/remote/fan_speed/high'):
+        remote_state.fan_speed = FanSpeed.High
 
 def handle_temperature_request(path):
     global remote_state
@@ -165,6 +187,9 @@ def application(env, start_response):
 
     if path.startswith('/remote/mode'):
         handle_mode_request(path)
+
+    if path.startswith('/remote/fan_speed/'):
+        handle_fan_speed_request(path)
 
     if path.startswith('/remote/temperature/'):
         handle_temperature_request(path)
