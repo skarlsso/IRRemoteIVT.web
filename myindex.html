@@ -45,11 +45,16 @@
             <li class="${mode_heat_active}"><a href="/remote/mode/heat"><span class="glyphicon glyphicon-fire"></span> Heat</a></li>
             <li class="${mode_cool_active}"><a href="/remote/mode/cool">Cool</a></li>
             <li class="${mode_fan_active}"><a href="/remote/mode/fan">Fan</a></li>
-            <li class="${mode_dry_active}"><a href="/remote/mode/dry">Dry</a></li>
-			<li><a href=""></a></li>
+			<li class="${mode_dry_active}"><a href="/remote/mode/dry">Dry</a></li>
+			${simple_start}
+			<li><a href="/remote/advanced"><span class="glyphicon glyphicon-plus"></span></a></li>
+			${simple_end}
+			${advanced_start}
+			<li><a href="/remote/simple"><span class="glyphicon glyphicon-minus"></span></a></li>
 			<li class="${full_effect_active}"><a href="/remote/full_effect">Full Effect</a></li>
 			<li class="${ion_active}"><a href="/remote/ion">ION</a></li>
 			<li class="${swing_active}"><a href="/remote/swing">Swing</a><li>
+			${advanced_end}
 		  </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -69,7 +74,8 @@
 			</ul>
 		  </div>
         </div>
-        <div class="col-lg-3">
+		${advanced_start}
+		<div class="col-lg-3">
 		  <div class="btn-group">
 			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 			  Fan: <b>${fan_speed}</b> <span class="caret"></span>
@@ -79,6 +85,7 @@
 			</ul>
 		  </div>
         </div>
+		${advanced_end}
       </div>
 
     </div><!-- /.container -->

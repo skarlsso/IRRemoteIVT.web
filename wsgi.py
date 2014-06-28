@@ -19,6 +19,10 @@ class RemoteState:
         self.temperature = 23
         self.fan_speed   = FanSpeed.Auto
 
+class Options:
+    """Options"""
+    advanced = True
+
 # The global instance.
 remote_state = RemoteState()
 
@@ -72,10 +76,16 @@ def generate_on_off_indicator(value):
     icon_text  = 'ON' if value else 'OFF'
     return '<span class="label label-' + icon_color + '">' + icon_text + ' <span class="glyphicon glyphicon-off"></span></span>'
 
+def generate_hidden_start(doit):
+    return '<div class="hidden">' if doit else ''
+
+def generate_hidden_end(doit):
+    return '</div>' if doit else ''
+
 def generate_page():
     with open ("myindex.html", "r") as myfile:
         data = myfile.read()
-        data = data.replace('\n', '')
+        #        data = data.replace('\n', '')
         data = Template(data).substitute(
             mode_heat_active   = bool_to_active(remote_state.mode == Mode.Heat),
             mode_cool_active   = bool_to_active(remote_state.mode == Mode.Cool),
@@ -88,7 +98,11 @@ def generate_page():
             temperature_list   = generate_temperature_list(),
             fan_speed          = FanSpeed.to_string[remote_state.fan_speed],
             fan_speed_list     = generate_fan_speed_list(),
-            on_off_indicator   = generate_on_off_indicator(remote_state.state)
+            on_off_indicator   = generate_on_off_indicator(remote_state.state),
+            advanced_start     = generate_hidden_start(not Options.advanced),
+            advanced_end       = generate_hidden_end(not Options.advanced),
+            simple_start       = generate_hidden_start(Options.advanced),
+            simple_end         = generate_hidden_end(Options.advanced),
             )
     return data
 
@@ -178,6 +192,14 @@ def handle_on_off_request(path):
 
     remote_state.state = not remote_state.state
 
+
+def handle_simple_request(path):
+    Options.advanced = False
+
+
+def handle_advanced_request(path):
+    Options.advanced = True
+
 def application(env, start_response):
     start_response('200 OK', [('Content-Type', 'text/html')])
 
@@ -213,5 +235,11 @@ def application(env, start_response):
 
     if path.startswith('/remote/on_off'):
         handle_on_off_request(path)
+
+    if path.startswith('/remote/simple'):
+        handle_simple_request(path)
+
+    if path.startswith('/remote/advanced'):
+        handle_advanced_request(path)
 
     return generate_page()
