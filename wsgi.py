@@ -8,7 +8,7 @@ class FanSpeed:
     to_string = ['Auto', 'Low', 'Medium', 'High']
 
 class RemoteState:
-    """The state off the Remote"""
+    """The state of the Remote"""
 
     def __init__(self):
         self.state       = False
